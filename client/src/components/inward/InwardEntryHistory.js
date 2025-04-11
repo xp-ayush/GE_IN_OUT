@@ -33,7 +33,14 @@ const InwardEntryHistory = ({ showCreatedBy = false }) => {
       setError('');
       setSuccess('');
       const token = localStorage.getItem('token');
-      const time_out = new Date().toTimeString().split(' ')[0];
+      
+      // Format current time in HH:mm format
+      const now = new Date();
+      const time_out = now.toLocaleTimeString('en-US', {
+        hour12: false,
+        hour: '2-digit',
+        minute: '2-digit'
+      });
       
       await axios.patch(
         `${API_BASE_URL}/api/inward-entries/${id}/timeout`,
@@ -41,7 +48,7 @@ const InwardEntryHistory = ({ showCreatedBy = false }) => {
         { headers: { Authorization: `Bearer ${token}` }}
       );
 
-      // Update the entry in the local state
+      // Update the entry in the local state with formatted time
       setEntries(entries.map(entry => 
         entry.id === id ? { ...entry, time_out } : entry
       ));

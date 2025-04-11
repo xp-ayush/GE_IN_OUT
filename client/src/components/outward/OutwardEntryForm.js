@@ -11,7 +11,8 @@ const OutwardEntryForm = () => {
     vehicle_type: '',
     source: '',
     driver_exists: false,
-    vehicle_exists: false
+    vehicle_exists: false,
+    time_in: new Date().toLocaleTimeString('en-US', { hour12: false }).slice(0, 5)
   });
 
   const [serialNumber, setSerialNumber] = useState('');
@@ -134,7 +135,13 @@ const OutwardEntryForm = () => {
 
     try {
       const token = localStorage.getItem('token');
+      const currentDate = new Date();
       
+      // Convert time_in to UTC
+      const [hours, minutes] = formData.time_in.split(':');
+      const timeInUTC = new Date(currentDate);
+      timeInUTC.setHours(parseInt(hours), parseInt(minutes), 0, 0);
+
       // If this is a new driver, create driver record first
       if (formData.driver_mobile && formData.driver_name && !formData.driver_exists) {
         try {
@@ -172,6 +179,7 @@ const OutwardEntryForm = () => {
         `${API_BASE_URL}/api/outward-entries`,
         { 
           ...formData,
+          time_in: timeInUTC.toISOString().slice(11, 16), // Extract HH:mm in UTC
           serial_number: serialNumber,
           entry_date: new Date().toISOString().split('T')[0]
         },
@@ -186,7 +194,8 @@ const OutwardEntryForm = () => {
         vehicle_type: '',
         source: '',
         driver_exists: false,
-        vehicle_exists: false
+        vehicle_exists: false,
+        time_in: new Date().toLocaleTimeString('en-US', { hour12: false }).slice(0, 5)
       });
       setError('');
       fetchSerialNumber();

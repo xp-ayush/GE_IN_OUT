@@ -12,6 +12,14 @@ const vehicleRoutes = require('./routes/vehicleRoutes');
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+// Add this helper function at the top with other imports
+function convertToUTCTime(timeString) {
+  const now = new Date();
+  const [hours, minutes] = timeString.split(':');
+  const localDate = new Date(now.getFullYear(), now.getMonth(), now.getDate(), parseInt(hours), parseInt(minutes));
+  return localDate.toISOString().slice(11, 16);
+}
+
 // Initialize database function
 async function initializeDatabase() {
   try {
@@ -249,7 +257,10 @@ app.get('/api/inward-entries', authenticateToken, async (req, res) => {
     if (req.user.role === 'User') {
       // Users can only see their own entries
       query = `
-        SELECT i.*, u.name as created_by_name
+        SELECT i.*, 
+               TIME_FORMAT(i.time_in, '%H:%i') as time_in,
+               TIME_FORMAT(i.time_out, '%H:%i') as time_out,
+               u.name as created_by_name
         FROM inward_entries i 
         LEFT JOIN users u ON i.created_by = u.id
         WHERE i.created_by = ?
@@ -259,7 +270,10 @@ app.get('/api/inward-entries', authenticateToken, async (req, res) => {
     } else {
       // Admin and Viewer can see all entries with creator name
       query = `
-        SELECT i.*, u.name as created_by_name
+        SELECT i.*, 
+               TIME_FORMAT(i.time_in, '%H:%i') as time_in,
+               TIME_FORMAT(i.time_out, '%H:%i') as time_out,
+               u.name as created_by_name
         FROM inward_entries i 
         LEFT JOIN users u ON i.created_by = u.id
         ORDER BY i.created_at DESC
@@ -568,6 +582,35 @@ app.use('/api/drivers', authenticateToken, driverRoutes);
 
 // Add vehicle routes
 app.use('/api/vehicles', authenticateToken, vehicleRoutes);
+
+// Update all timeout endpoint handlers to use UTC conversion
+app.patch('/api/inward-entries/:id/timeout', authenticateToken, async (req, res) => {
+  try {
+    const { time_out } = req.body;
+    const utcTime = convertToUTCTime(time_out);
+    await db.execute(
+      'UPDATE inward_entries SET time_out = ? WHERE id = ?',
+      [utcTime, req.params.id]
+    );
+    res.json({ message: 'Time out updated successfully' });
+  } catch (error) {
+    res.status(500).json({ message: 'Error updating time out' });
+  }
+});
+
+app.patch('/api/outward-entries/:id/timeout', authenticateToken, async (req, res) => {
+  try {
+    const { time_out } = req.body;
+    const utcTime = convertToUTCTime(time_out);
+    await db.execute(
+      'UPDATE outward_entries SET time_out = ? WHERE id = ?',
+      [utcTime, req.params.id]
+    );
+    res.json({ message: 'Time out updated successfully' });
+  } catch (error) {
+    res.status(500).json({ message: 'Error updating time out' });
+  }
+});
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);

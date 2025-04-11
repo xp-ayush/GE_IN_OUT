@@ -2,6 +2,17 @@ import React, { useState, useMemo } from 'react';
 import './EntryHistoryTable.css';
 
 const EntryHistoryTable = ({ entries, onEdit, type, onTimeoutUpdate, showActions = true, readOnly = false, showCreatedBy = false }) => {
+  const formatTimeToLocal = (timeStr) => {
+    if (!timeStr) return '-';
+    const today = new Date().toISOString().split('T')[0];
+    const dateTime = new Date(`${today}T${timeStr}`);
+    return dateTime.toLocaleTimeString('en-US', {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false
+    });
+  };
+
   const [searchTerm, setSearchTerm] = useState('');
   const [showFilters, setShowFilters] = useState(false);
   const [filters, setFilters] = useState({
@@ -143,7 +154,7 @@ const EntryHistoryTable = ({ entries, onEdit, type, onTimeoutUpdate, showActions
   const renderTimeOutCell = (entry, isInward) => (
     <td>
       {entry.time_out ? (
-        entry.time_out
+        formatTimeToLocal(entry.time_out)
       ) : isInward && !readOnly ? (
         <button
           className="update-timeout-button"
@@ -189,7 +200,7 @@ const EntryHistoryTable = ({ entries, onEdit, type, onTimeoutUpdate, showActions
               <td>{entry.entry_type || '-'}</td>
               <td>{entry.vehicle_type || '-'}</td>
               <td>{entry.source_location || '-'}</td>
-              <td>{entry.time_in || '-'}</td>
+              <td>{formatTimeToLocal(entry.time_in) || '-'}</td>
               {renderTimeOutCell(entry, true)}
               {renderMaterialsCell(entry.materials_list)}
               <td>{entry.remarks || '-'}</td>
@@ -239,7 +250,7 @@ const EntryHistoryTable = ({ entries, onEdit, type, onTimeoutUpdate, showActions
               <td>{entry.vehicle_number || '-'}</td>
               <td>{entry.vehicle_type || '-'}</td>
               <td>{entry.source || '-'}</td>
-              <td>{entry.time_in || '-'}</td>
+              <td>{formatTimeToLocal(entry.time_in) || '-'}</td>
               {renderTimeOutCell(entry, false)}
               <td>{entry.purpose || '-'}</td>
               <td>{entry.check_by || '-'}</td>

@@ -14,7 +14,7 @@ const InwardEntryForm = ({ onEntryCreated }) => {
     entry_type: '',
     vehicle_type: '',
     source_location: '',
-    time_in: new Date().toTimeString().slice(0, 5),
+    time_in: new Date().toLocaleTimeString('en-US', { hour12: false }).slice(0, 5),
     remarks: ''
   });
   const [materials, setMaterials] = useState([initialMaterial]);
@@ -114,12 +114,20 @@ const InwardEntryForm = ({ onEntryCreated }) => {
 
     try {
       const token = localStorage.getItem('token');
+      const currentDate = new Date();
+      
+      // Convert time_in to UTC
+      const [hours, minutes] = formData.time_in.split(':');
+      const timeInUTC = new Date(currentDate);
+      timeInUTC.setHours(parseInt(hours), parseInt(minutes), 0, 0);
+
       await axios.post(
         `${API_BASE_URL}/api/inward-entries`,
         { 
           ...formData, 
           materials,
-          serial_number: serialNumber
+          serial_number: serialNumber,
+          time_in: timeInUTC.toISOString().slice(11, 16) // Extract HH:mm in UTC
         },
         { headers: { Authorization: `Bearer ${token}` }}
       );
@@ -244,6 +252,7 @@ const InwardEntryForm = ({ onEntryCreated }) => {
               <option value="Cash">Cash</option>
               <option value="Challan">Challan</option>
               <option value="Bill">Bill</option>
+              <option value="RGP">RGP</option>
             </select>
           </div>
           <div className="form-group">

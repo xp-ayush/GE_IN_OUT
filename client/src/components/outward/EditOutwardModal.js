@@ -2,7 +2,7 @@ import React from 'react';
 import './OutwardEntry.css';
 import axios from 'axios';
 
-const API_BASE_URL = 'http://10.10.2.29:5000'; // Replace with your actual API base URL
+const API_BASE_URL = 'http://localhost:5000'; // Replace with your actual API base URL
 
 const EditOutwardModal = ({
   editingEntry,
