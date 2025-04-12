@@ -27,7 +27,7 @@ A full-stack application with React frontend and Node.js/MySQL backend implement
 2. **Environment Variables**
    Create a `.env` file in the root directory with the following variables:
    ```
-   DB_HOST=localhost
+   DB_HOST=10.10.2.29
    DB_USER=your_username
    DB_PASSWORD=your_password
    DB_NAME=gateentry
@@ -55,12 +55,12 @@ A full-stack application with React frontend and Node.js/MySQL backend implement
    ```
 
    The application will be available at:
-   - Frontend: http://localhost:3000
-   - Backend: http://localhost:5000
+   - Frontend: http://10.10.2.29:3000
+   - Backend: http://10.10.2.29:5000
 
 ## Usage
 
-1. Access the login page at http://localhost:3000
+1. Access the login page at http://10.10.2.29:3000
 2. Enter your email and password
 3. Upon successful login, you'll be redirected based on your role:
    - Admin: /admin

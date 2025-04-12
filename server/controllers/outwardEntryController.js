@@ -54,19 +54,28 @@ const createOutwardEntry = async (req, res) => {
       );
     }
 
+    // Convert time_in to IST
+    const timeInIST = new Date().toLocaleTimeString('en-IN', {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false,
+      timeZone: 'Asia/Kolkata'
+    });
+
     // Generate serial number using the utility
     const serial_number = await generateSerialNumber('outward');
 
-    // Insert the entry with only the required fields
+    // Insert the entry with IST time
     const [result] = await connection.execute(
       `INSERT INTO outward_entries (
         serial_number, entry_date, time_in,
         driver_mobile, driver_name,
         vehicle_number, vehicle_type,
         source, created_by
-      ) VALUES (?, CURDATE(), CURTIME(), ?, ?, ?, ?, ?, ?)`,
+      ) VALUES (?, CURDATE(), ?, ?, ?, ?, ?, ?, ?)`,
       [
         serial_number,
+        timeInIST,
         driver_mobile,
         driver_name,
         vehicle_number,
@@ -236,8 +245,15 @@ const updateOutwardEntry = async (req, res) => {
       updateValues.push(remarks);
     }
     if (time_out) {
+      // Convert time_out to IST
+      const timeOutIST = new Date().toLocaleTimeString('en-IN', {
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false,
+        timeZone: 'Asia/Kolkata'
+      });
       updateFields.push('time_out = ?');
-      updateValues.push(time_out);
+      updateValues.push(timeOutIST);
     }
 
     // Update the entry if there are fields to update

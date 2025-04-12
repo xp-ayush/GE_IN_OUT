@@ -6,7 +6,7 @@
   --error-color: #ef4444;
   --text-primary: #1f2937;
   --text-secondary: #6b7280;
-  --background-color: #f3f4f6;
+  --background-color: #f7f9fc; /* Updated background color */
   --card-background: rgba(255, 255, 255, 0.95);
   --input-border: #e5e7eb;
   --input-focus: #818cf8;
@@ -21,54 +21,47 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: 
-    linear-gradient(45deg, var(--gradient-1) 0%, var(--gradient-2) 100%),
-    linear-gradient(135deg, var(--gradient-3) 0%, var(--gradient-4) 100%);
-  background-size: 400% 400%;
-  animation: gradientBG 15s ease infinite;
-  padding: 1rem;
+  background: var(--background-color);
+  padding: 2rem 1rem;
   position: relative;
 }
 
 .login-page::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: 
-    radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.1) 0%, transparent 40%),
-    radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.1) 0%, transparent 40%);
-  pointer-events: none;
+  display: none; /* Remove the gradient overlay */
 }
 
 .login-container {
   width: 100%;
-  max-width: 420px;
+  max-width: 500px; /* Increased width for more square appearance */
+  margin: auto;
   perspective: 1000px;
 }
 
+.company-logo {
+  width: 120px; /* Smaller logo */
+  height: auto;
+  margin-bottom: 1rem;
+}
+
 .login-card {
-  background: rgba(255, 255, 255, 0.9);
-  backdrop-filter: blur(20px);
-  border-radius: 1.5rem;
-  box-shadow: 
-    0 25px 50px -12px rgba(0, 0, 0, 0.25),
-    0 0 0 1px rgba(255, 255, 255, 0.1);
+  background: #ffffff;
   padding: 2.5rem;
+  border-radius: 1.5rem;
+  width: 100%;
+  min-height: 500px; /* Fixed height instead of aspect-ratio */
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between; /* Better space distribution */
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  border: 1px solid #e5e7eb;
   transform-style: preserve-3d;
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   animation: cardFloat 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .login-card:hover {
   transform: translateY(-5px);
-  box-shadow: 
-    0 25px 30px -5px rgba(0, 0, 0, 0.15),
-    0 15px 15px -5px rgba(0, 0, 0, 0.08),
-    0 0 0 1px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
 }
 
 .login-header {
@@ -89,12 +82,15 @@
 }
 
 .login-form {
+  flex: 1;
   display: flex;
   flex-direction: column;
+  justify-content: space-around; /* Distribute space evenly */
   gap: 1.5rem;
 }
 
 .form-group {
+  margin-bottom: 0.5rem;
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
@@ -114,7 +110,8 @@
 
 .form-input {
   width: 100%;
-  padding: 0.875rem 1rem;
+  padding: 0.75rem 1rem;
+  height: 45px;
   border: 2px solid var(--input-border);
   border-radius: 0.75rem;
   font-size: 1rem;
@@ -174,6 +171,8 @@
   background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
   color: white;
   padding: 1rem 1.5rem;
+  margin-top: 0.5rem;
+  height: 45px;
   border: none;
   border-radius: 0.75rem;
   font-size: 1rem;
@@ -314,7 +313,8 @@
 
 @media (max-width: 480px) {
   .login-card {
-    padding: 1.5rem;
+    min-height: auto; /* Remove fixed height on mobile */
+    padding: 2rem;
   }
 
   .login-header h1 {
@@ -327,6 +327,10 @@
 
   .form-input {
     padding: 0.625rem 0.875rem;
+  }
+
+  .login-form {
+    gap: 1.25rem;
   }
 
   .login-button {

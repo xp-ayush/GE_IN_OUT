@@ -42,7 +42,15 @@ const createInwardEntry = async (req, res) => {
       remarks
     } = req.body;
 
-    // Insert the main entry
+    // Convert time_in to IST if needed
+    const timeInIST = new Date().toLocaleTimeString('en-IN', {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false,
+      timeZone: 'Asia/Kolkata'
+    });
+
+    // Insert the main entry with IST time
     const [result] = await connection.execute(
       `INSERT INTO inward_entries (
         serial_number, entry_date, party_name, bill_number, bill_amount,
@@ -50,7 +58,7 @@ const createInwardEntry = async (req, res) => {
       ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [
         serial_number, entry_date, party_name, bill_number, bill_amount,
-        entry_type, vehicle_type, source_location, time_in, remarks, req.user.id
+        entry_type, vehicle_type, source_location, timeInIST, remarks, req.user.id
       ]
     );
 
@@ -195,12 +203,18 @@ const getInwardEntry = async (req, res) => {
 const updateTimeout = async (req, res) => {
   const connection = await db.getConnection();
   try {
-    const now = new Date().toISOString().slice(0, 19).replace('T', ' ');
+    // Get current time in IST
+    const timeOutIST = new Date().toLocaleTimeString('en-IN', {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false,
+      timeZone: 'Asia/Kolkata'
+    });
     
-    // Update the timeout
+    // Update with IST time
     const [result] = await connection.execute(
       'UPDATE inward_entries SET time_out = ? WHERE id = ?',
-      [now, req.params.id]
+      [timeOutIST, req.params.id]
     );
 
     if (result.affectedRows === 0) {

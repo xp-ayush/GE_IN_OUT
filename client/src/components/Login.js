@@ -3,6 +3,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { API_BASE_URL } from '../config';
 import './Login.css';
+import companyLogo from '../assets/logo.png'; // Add this import
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -53,6 +54,7 @@ const Login = () => {
       <div className="login-container">
         <div className="login-card">
           <div className="login-header">
+            <img src={companyLogo} alt="Company Logo" className="company-logo" />
             <h1>Welcome Back</h1>
             <p>Please enter your credentials to continue</p>
           </div>

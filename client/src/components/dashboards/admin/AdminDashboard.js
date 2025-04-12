@@ -29,6 +29,11 @@ const AdminDashboard = () => {
   const [selectedUser, setSelectedUser] = useState(null);
   const [showPasswordModal, setShowPasswordModal] = useState(false);
   const [newPassword, setNewPassword] = useState('');
+  const [pagination, setPagination] = useState({
+    users: { page: 1, itemsPerPage: 10 },
+    inward: { page: 1, itemsPerPage: 10 },
+    outward: { page: 1, itemsPerPage: 10 }
+  });
 
   useEffect(() => {
     fetchData();
@@ -136,6 +141,24 @@ const AdminDashboard = () => {
     }
   };
 
+  const handlePageChange = (type, newPage) => {
+    setPagination(prev => ({
+      ...prev,
+      [type]: { ...prev[type], page: newPage }
+    }));
+  };
+
+  const getPaginatedData = (data, type) => {
+    const { page, itemsPerPage } = pagination[type];
+    const start = (page - 1) * itemsPerPage;
+    const end = start + itemsPerPage;
+    return data.slice(start, end);
+  };
+
+  const getPageCount = (data, type) => {
+    return Math.ceil(data.length / pagination[type].itemsPerPage);
+  };
+
   function formatDate(date) {
     const d = new Date(date);
     return d.toLocaleDateString('en-US'); // This will return "MM/DD/YYYY"
@@ -223,6 +246,25 @@ const AdminDashboard = () => {
       console.error('Export error:', error);
       setError('Error exporting data');
     }
+  };
+
+  const generatePaginationNumbers = (currentPage, totalPages) => {
+    let pages = [];
+    
+    if (totalPages <= 7) {
+      for (let i = 1; i <= totalPages; i++) {
+        pages.push(i);
+      }
+    } else {
+      if (currentPage <= 3) {
+        pages = [1, 2, 3, 4, 5, '...', totalPages];
+      } else if (currentPage >= totalPages - 2) {
+        pages = [1, '...', totalPages - 4, totalPages - 3, totalPages - 2, totalPages - 1, totalPages];
+      } else {
+        pages = [1, '...', currentPage - 1, currentPage, currentPage + 1, '...', totalPages];
+      }
+    }
+    return pages;
   };
 
   if (!user || user.role !== 'Admin') {
@@ -323,71 +365,107 @@ const AdminDashboard = () => {
 
               {showAddUser && (
                 <form className="add-user-form" onSubmit={handleAddUser}>
-                  {error && <div className="error-message">{error}</div>}
-                  {success && <div className="success-message">{success}</div>}
+                  <div className="form-header">
+                    <h4>Create New User Account</h4>
+                    <p>Fill in the information below to create a new user account</p>
+                  </div>
+
+                  {error && (
+                    <div className="error-message">
+                      <i className="fas fa-exclamation-circle"></i>
+                      {error}
+                    </div>
+                  )}
+                  {success && (
+                    <div className="success-message">
+                      <i className="fas fa-check-circle"></i>
+                      {success}
+                    </div>
+                  )}
                   
                   <div className="form-grid">
                     <div className="form-group">
-                      <label>Name:</label>
-                      <input
-                        type="text"
-                        name="name"
-                        value={newUser.name}
-                        onChange={handleInputChange}
-                        required
-                      />
+                      <label>Full Name</label>
+                      <div className="input-icon-wrapper">
+                        <input
+                          type="text"
+                          name="name"
+                          value={newUser.name}
+                          onChange={handleInputChange}
+                          placeholder="Enter Name"
+                          required
+                        />
+                        <i className="fas fa-user input-icon"></i>
+                      </div>
                     </div>
 
                     <div className="form-group">
-                      <label>Email:</label>
-                      <input
-                        type="email"
-                        name="email"
-                        value={newUser.email}
-                        onChange={handleInputChange}
-                        required
-                      />
+                      <label>Email Address</label>
+                      <div className="input-icon-wrapper">
+                        <input
+                          type="email"
+                          name="email"
+                          value={newUser.email}
+                          onChange={handleInputChange}
+                          placeholder="Enter Email"
+                          required
+                        />
+                        <i className="fas fa-envelope input-icon"></i>
+                      </div>
                     </div>
 
                     <div className="form-group">
-                      <label>Password:</label>
-                      <input
-                        type="password"
-                        name="password"
-                        value={newUser.password}
-                        onChange={handleInputChange}
-                        required
-                      />
+                      <label>Password</label>
+                      <div className="input-icon-wrapper">
+                        <input
+                          type="password"
+                          name="password"
+                          value={newUser.password}
+                          onChange={handleInputChange}
+                          placeholder="Enter secure password"
+                          required
+                        />
+                        <i className="fas fa-lock input-icon"></i>
+                      </div>
                     </div>
 
                     <div className="form-group">
-                      <label>Role:</label>
-                      <select
-                        name="role"
-                        value={newUser.role}
-                        onChange={handleInputChange}
-                        required
-                      >
-                        <option value="User">User</option>
-                        <option value="Viewer">Viewer</option>
-                        <option value="Admin">Admin</option>
-                      </select>
+                      <label>User Role</label>
+                      <div className="input-icon-wrapper">
+                        <select
+                          name="role"
+                          value={newUser.role}
+                          onChange={handleInputChange}
+                          required
+                        >
+                          <option value="">Select role</option>
+                          <option value="User">User</option>
+                          <option value="Viewer">Viewer</option>
+                          <option value="Admin">Admin</option>
+                        </select>
+                        <i className="fas fa-user-shield input-icon"></i>
+                      </div>
                     </div>
 
                     <div className="form-group">
-                      <label>Location:</label>
-                      <input
-                        type="text"
-                        name="location"
-                        value={newUser.location}
-                        onChange={handleInputChange}
-                        required
-                      />
+                      <label>Location</label>
+                      <div className="input-icon-wrapper">
+                        <input
+                          type="text"
+                          name="location"
+                          value={newUser.location}
+                          onChange={handleInputChange}
+                          placeholder="Office location"
+                          required
+                        />
+                        <i className="fas fa-map-marker-alt input-icon"></i>
+                      </div>
                     </div>
                   </div>
 
                   <button type="submit" className="submit-button">
-                    <i className="fas fa-user-plus"></i> Add User
+                    <i className="fas fa-user-plus"></i>
+                    Create Account
                   </button>
                 </form>
               )}
@@ -407,7 +485,7 @@ const AdminDashboard = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {users.map(user => (
+                    {getPaginatedData(users, 'users').map(user => (
                       <tr key={user.id}>
                         <td>{user.id}</td>
                         <td>{user.name}</td>
@@ -443,6 +521,37 @@ const AdminDashboard = () => {
                     ))}
                   </tbody>
                 </table>
+                <div className="pagination">
+                  <button
+                    className="pagination-button nav-button"
+                    disabled={pagination.users.page === 1}
+                    onClick={() => handlePageChange('users', pagination.users.page - 1)}
+                  >
+                    <i className="fas fa-chevron-left"></i>
+                  </button>
+                  
+                  {generatePaginationNumbers(pagination.users.page, getPageCount(users, 'users')).map((pageNum, idx) => (
+                    pageNum === '...' ? (
+                      <span key={`ellipsis-${idx}`} className="pagination-ellipsis">...</span>
+                    ) : (
+                      <button
+                        key={pageNum}
+                        className={`pagination-button ${pagination.users.page === pageNum ? 'active' : ''}`}
+                        onClick={() => handlePageChange('users', pageNum)}
+                      >
+                        {pageNum}
+                      </button>
+                    )
+                  ))}
+
+                  <button
+                    className="pagination-button nav-button"
+                    disabled={pagination.users.page === getPageCount(users, 'users')}
+                    onClick={() => handlePageChange('users', pagination.users.page + 1)}
+                  >
+                    <i className="fas fa-chevron-right"></i>
+                  </button>
+                </div>
               </div>
             </div>
           )}
@@ -474,7 +583,7 @@ const AdminDashboard = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {inwardEntries.map(entry => (
+                    {getPaginatedData(inwardEntries, 'inward').map(entry => (
                       <tr key={entry.id}>
                         <td>{entry.serial_number}</td>
                         <td>{formatDate(entry.entry_date)}</td>
@@ -512,6 +621,37 @@ const AdminDashboard = () => {
                     ))}
                   </tbody>
                 </table>
+                <div className="pagination">
+                  <button
+                    className="pagination-button nav-button"
+                    disabled={pagination.inward.page === 1}
+                    onClick={() => handlePageChange('inward', pagination.inward.page - 1)}
+                  >
+                    <i className="fas fa-chevron-left"></i>
+                  </button>
+                  
+                  {generatePaginationNumbers(pagination.inward.page, getPageCount(inwardEntries, 'inward')).map((pageNum, idx) => (
+                    pageNum === '...' ? (
+                      <span key={`ellipsis-${idx}`} className="pagination-ellipsis">...</span>
+                    ) : (
+                      <button
+                        key={pageNum}
+                        className={`pagination-button ${pagination.inward.page === pageNum ? 'active' : ''}`}
+                        onClick={() => handlePageChange('inward', pageNum)}
+                      >
+                        {pageNum}
+                      </button>
+                    )
+                  ))}
+
+                  <button
+                    className="pagination-button nav-button"
+                    disabled={pagination.inward.page === getPageCount(inwardEntries, 'inward')}
+                    onClick={() => handlePageChange('inward', pagination.inward.page + 1)}
+                  >
+                    <i className="fas fa-chevron-right"></i>
+                  </button>
+                </div>
               </div>
             </div>
           )}
@@ -544,7 +684,7 @@ const AdminDashboard = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {outwardEntries.map(entry => (
+                    {getPaginatedData(outwardEntries, 'outward').map(entry => (
                       <tr key={entry.id}>
                         <td>{entry.serial_number}</td>
                         <td>{formatDate(entry.entry_date)}</td>
@@ -607,6 +747,37 @@ const AdminDashboard = () => {
                     ))}
                   </tbody>
                 </table>
+                <div className="pagination">
+                  <button
+                    className="pagination-button nav-button"
+                    disabled={pagination.outward.page === 1}
+                    onClick={() => handlePageChange('outward', pagination.outward.page - 1)}
+                  >
+                    <i className="fas fa-chevron-left"></i>
+                  </button>
+                  
+                  {generatePaginationNumbers(pagination.outward.page, getPageCount(outwardEntries, 'outward')).map((pageNum, idx) => (
+                    pageNum === '...' ? (
+                      <span key={`ellipsis-${idx}`} className="pagination-ellipsis">...</span>
+                    ) : (
+                      <button
+                        key={pageNum}
+                        className={`pagination-button ${pagination.outward.page === pageNum ? 'active' : ''}`}
+                        onClick={() => handlePageChange('outward', pageNum)}
+                      >
+                        {pageNum}
+                      </button>
+                    )
+                  ))}
+
+                  <button
+                    className="pagination-button nav-button"
+                    disabled={pagination.outward.page === getPageCount(outwardEntries, 'outward')}
+                    onClick={() => handlePageChange('outward', pagination.outward.page + 1)}
+                  >
+                    <i className="fas fa-chevron-right"></i>
+                  </button>
+                </div>
               </div>
             </div>
           )}

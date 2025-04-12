@@ -34,12 +34,13 @@ const InwardEntryHistory = ({ showCreatedBy = false }) => {
       setSuccess('');
       const token = localStorage.getItem('token');
       
-      // Format current time in HH:mm format
+      // Get current time in IST format
       const now = new Date();
-      const time_out = now.toLocaleTimeString('en-US', {
-        hour12: false,
+      const time_out = now.toLocaleTimeString('en-IN', {
         hour: '2-digit',
-        minute: '2-digit'
+        minute: '2-digit',
+        hour12: false,
+        timeZone: 'Asia/Kolkata'
       });
       
       await axios.patch(
@@ -48,7 +49,7 @@ const InwardEntryHistory = ({ showCreatedBy = false }) => {
         { headers: { Authorization: `Bearer ${token}` }}
       );
 
-      // Update the entry in the local state with formatted time
+      // Update the entry in the local state
       setEntries(entries.map(entry => 
         entry.id === id ? { ...entry, time_out } : entry
       ));
