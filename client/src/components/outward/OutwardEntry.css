@@ -240,6 +240,36 @@ input:focus, select:focus, textarea:focus {
   transform: translateY(-2px);
 }
 
+.add-material-btn {
+  background-color: #4CAF50;
+  color: white;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.3s ease;
+}
+
+.add-material-btn:hover {
+  background-color: #45a049;
+}
+
+.remove-material-btn {
+  background-color: #ff4444;
+  color: white;
+  padding: 6px 12px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-left: 10px;
+}
+
+.remove-material-btn:hover {
+  background-color: #cc0000;
+}
+
 /* Entry Details Styles */
 .entry-details {
   padding: 1.5rem;
@@ -286,11 +316,10 @@ input:focus, select:focus, textarea:focus {
 
 /* Materials Section Styles */
 .materials-section {
-  margin-top: 2rem;
-  padding: 1.5rem;
-  background-color: var(--background-primary);
-  border-radius: var(--radius-md);
-  box-shadow: var(--shadow-sm);
+  margin-top: 20px;
+  padding: 16px;
+  border-radius: 4px;
+  background-color: #f9f9f9;
 }
 
 .materials-header {
@@ -306,9 +335,14 @@ input:focus, select:focus, textarea:focus {
 }
 
 .material-edit-row {
-  background-color: var(--background-secondary);
-  padding: 1.5rem;
-  border-radius: var(--radius-md);
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 16px;
+  padding: 16px;
+  background-color: white;
+  border-radius: 4px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
 }
 
 .material-edit-fields {
@@ -423,11 +457,41 @@ input:focus, select:focus, textarea:focus {
 }
 
 .modal-footer {
-  padding: 1.5rem;
-  border-top: 1px solid #e5e7eb;
   display: flex;
   justify-content: flex-end;
-  gap: 1rem;
+  gap: 10px;
+  padding: 16px;
+  border-top: 1px solid #ddd;
+}
+
+.save-btn {
+  background-color: #2196F3;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.3s ease;
+}
+
+.save-btn:hover {
+  background-color: #1976D2;
+}
+
+.cancel-btn {
+  background-color: #777;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.3s ease;
+}
+
+.cancel-btn:hover {
+  background-color: #666;
 }
 
 /* Responsive Design */

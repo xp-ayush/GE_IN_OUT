@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import './OutwardEntry.css';
 import axios from 'axios';
 
@@ -16,6 +16,13 @@ const EditOutwardModal = ({
   success,
   setError
 }) => {
+  useEffect(() => {
+    // Add a material row when the modal opens if there are no materials
+    if (!editingEntry?.materials_list || editingEntry.materials_list.length === 0) {
+      addMaterial();
+    }
+  }, [editingEntry, addMaterial]); // Add dependencies to avoid stale closures
+
   const uomOptions = [
     'SqY', 'Sq.Ft', 'SqM', 'Cum', 'FTS', 'Kg', 
     'LTR', 'Mtr', 'Nos', 'PRS', 'SET'
