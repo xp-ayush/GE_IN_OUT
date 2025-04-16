@@ -47,22 +47,39 @@ const AdminDashboard = () => {
       // Fetch all data in parallel
       const [usersRes, inwardRes, outwardRes] = await Promise.all([
         axios.get(`${API_BASE_URL}/api/users`, { headers }),
-        axios.get(`${API_BASE_URL}/api/admin/inward-entries`, { headers }),
-        axios.get(`${API_BASE_URL}/api/admin/outward-entries`, { headers })
+        axios.get(`${API_BASE_URL}/api/inward-entries`, { headers }), // Changed from admin endpoint
+        axios.get(`${API_BASE_URL}/api/outward-entries`, { headers }) // Changed from admin endpoint
       ]);
 
+      console.log('Fetched data:', { users: usersRes.data, inward: inwardRes.data, outward: outwardRes.data }); // Debug log
+
       setUsers(usersRes.data);
-      setInwardEntries(inwardRes.data);
-      setOutwardEntries(outwardRes.data);
-      
+
+      // Transform inward entries data
+      const transformedInwardEntries = inwardRes.data.map(entry => ({
+        ...entry,
+        materials: Array.isArray(entry.materials_list) ? entry.materials_list : 
+                  Array.isArray(entry.materials) ? entry.materials : []
+      }));
+      setInwardEntries(transformedInwardEntries);
+
+      // Transform outward entries data
+      const transformedOutwardEntries = outwardRes.data.map(entry => ({
+        ...entry,
+        materials: Array.isArray(entry.materials_list) ? entry.materials_list : 
+                  Array.isArray(entry.materials) ? entry.materials : []
+      }));
+      setOutwardEntries(transformedOutwardEntries);
+
       setStats({
         totalUsers: usersRes.data.length,
-        totalInward: inwardRes.data.length,
-        totalOutward: outwardRes.data.length
+        totalInward: transformedInwardEntries.length,
+        totalOutward: transformedOutwardEntries.length
       });
+
     } catch (err) {
       console.error('Error fetching data:', err);
-      setError('Error fetching data');
+      setError(err.response?.data?.message || 'Error fetching data');
     }
   };
 
@@ -610,10 +627,14 @@ const AdminDashboard = () => {
                         <td>
                           <div className="materials-list">
                             <div className="materials-names">
-                              {entry.materials.map(material => material.material_name).join('\n')}
+                              {(entry.materials || []).map(material => 
+                                material.material_name || material.name
+                              ).join('\n')}
                             </div>
                             <div className="text-muted quantities">
-                              {entry.materials.map(material => `${material.quantity} ${material.uom}`).join('\n')}
+                              {(entry.materials || []).map(material => 
+                                `${material.quantity} ${material.uom}`
+                              ).join('\n')}
                             </div>
                           </div>
                         </td>
@@ -710,10 +731,14 @@ const AdminDashboard = () => {
                         <td>
                           <div className="materials-list">
                             <div className="materials-names">
-                              {entry.materials.map(material => material.material_name).join('\n')}
+                              {(entry.materials || []).map(material => 
+                                material.material_name || material.name
+                              ).join('\n')}
                             </div>
                             <div className="text-muted quantities">
-                              {entry.materials.map(material => `${material.quantity} ${material.uom}`).join('\n')}
+                              {(entry.materials || []).map(material => 
+                                `${material.quantity} ${material.uom}`
+                              ).join('\n')}
                             </div>
                           </div>
                         </td>
